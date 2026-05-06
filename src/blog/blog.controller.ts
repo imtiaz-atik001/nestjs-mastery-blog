@@ -8,6 +8,7 @@ import {
   Param,
   HttpCode,
   HttpStatus,
+  UseGuards,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -15,17 +16,23 @@ import {
   ApiResponse,
   ApiParam,
   ApiBody,
+  ApiBearerAuth,
 } from '@nestjs/swagger';
 import { BlogService } from './blog.service';
 import { CreateBlogDto } from './dto/create-blog.dto';
 import { UpdateBlogDto } from './dto/update-blog.dto';
 import { Blog } from './schemas/blog.schema';
+import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
+import { Public } from 'src/common/decorators/public.decorator';
 
-@ApiTags('blogs') // Groups all routes under "blogs" in Swagger UI
+@ApiBearerAuth()
+@ApiTags('blogs')
+@UseGuards(JwtAuthGuard)
 @Controller('blogs')
 export class BlogController {
   constructor(private readonly blogService: BlogService) {}
 
+  @Public()
   @Get()
   @ApiOperation({ summary: 'Get all blogs' })
   @ApiResponse({ status: 200, description: 'Returns all blogs', type: [Blog] })
@@ -33,6 +40,7 @@ export class BlogController {
     return this.blogService.findAll();
   }
 
+  @Public()
   @Get(':id')
   @ApiOperation({ summary: 'Get a single blog by ID' })
   @ApiParam({ name: 'id', description: 'MongoDB ObjectId of the blog' })

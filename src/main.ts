@@ -16,20 +16,24 @@ async function bootstrap() {
   // ========== SWAGGER SETUP ==========
   const swaggerConfig = new DocumentBuilder()
     .setTitle('NestJS Blog API')
-    .setDescription('Blog API built with NestJS, MongoDB, and Swagger')
+    .setDescription('Blog API with JWT Authentication')
     .setVersion('1.0')
-    .addTag('blogs', 'Blog management endpoints')
+    .addBearerAuth() // Adds "Authorize" button in Swagger UI
+    .addTag('blogs')
+    .addTag('auth')
     .build();
 
   const document = SwaggerModule.createDocument(app, swaggerConfig);
   SwaggerModule.setup('api', app, document);
   // ===================================
 
-  app.useGlobalPipes(new ValidationPipe({
-    whitelist: true,
-    forbidNonWhitelisted: true,
-    transform: true,
-  }));
+  app.useGlobalPipes(
+    new ValidationPipe({
+      whitelist: true,
+      forbidNonWhitelisted: true,
+      transform: true,
+    }),
+  );
 
   await app.listen(port);
   console.log(`🚀 Application running on: http://localhost:${port}`);
